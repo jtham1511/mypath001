@@ -14,14 +14,12 @@ class FFAppState {
 
   Future initializePersistedState() async {
     prefs = await SharedPreferences.getInstance();
-    _togglefav = prefs
-            .getStringList('ff_togglefav')
-            ?.map((x) => x == 'true')
-            ?.toList() ??
-        _togglefav;
+    _togglefav =
+        prefs.getStringList('ff_togglefav')?.map((x) => x == 'true').toList() ??
+            _togglefav;
   }
 
-  SharedPreferences prefs;
+  late SharedPreferences prefs;
 
   List<bool> _togglefav = [];
   List<bool> get togglefav => _togglefav;
@@ -46,7 +44,7 @@ class FFAppState {
   List<String> searchfield = [];
 }
 
-LatLng _latLngFromString(String val) {
+LatLng? _latLngFromString(String? val) {
   if (val == null) {
     return null;
   }

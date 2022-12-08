@@ -9,11 +9,13 @@ import '../flutter_flow/upload_media.dart';
 import '../onboarding/onboarding_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AddCarWidget extends StatefulWidget {
-  const AddCarWidget({Key key}) : super(key: key);
+  const AddCarWidget({Key? key}) : super(key: key);
 
   @override
   _AddCarWidgetState createState() => _AddCarWidgetState();
@@ -21,34 +23,50 @@ class AddCarWidget extends StatefulWidget {
 
 class _AddCarWidgetState extends State<AddCarWidget>
     with TickerProviderStateMixin {
-  String uploadedFileUrl = '';
-  TextEditingController carNameController;
-  TextEditingController carColorController;
-  TextEditingController carMileageController;
-  TextEditingController tempDefaultController;
-  final scaffoldKey = GlobalKey<ScaffoldState>();
   final animationsMap = {
     'imageOnPageLoadAnimation': AnimationInfo(
       trigger: AnimationTrigger.onPageLoad,
-      duration: 600,
-      fadeIn: true,
-      initialState: AnimationState(
-        offset: Offset(0, 39),
-        opacity: 0,
-      ),
-      finalState: AnimationState(
-        offset: Offset(0, 0),
-        opacity: 1,
-      ),
+      effects: [
+        FadeEffect(
+          curve: Curves.easeInOut,
+          delay: 0.ms,
+          duration: 600.ms,
+          begin: 0,
+          end: 1,
+        ),
+        MoveEffect(
+          curve: Curves.easeInOut,
+          delay: 0.ms,
+          duration: 600.ms,
+          begin: Offset(0, 39),
+          end: Offset(0, 0),
+        ),
+        ScaleEffect(
+          curve: Curves.easeInOut,
+          delay: 0.ms,
+          duration: 600.ms,
+          begin: 1,
+          end: 1,
+        ),
+      ],
     ),
   };
+  bool isMediaUploading = false;
+  String uploadedFileUrl = '';
+
+  TextEditingController? carNameController;
+  TextEditingController? carColorController;
+  TextEditingController? carMileageController;
+  TextEditingController? tempDefaultController;
+  final scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
-    startPageLoadAnimations(
-      animationsMap.values
-          .where((anim) => anim.trigger == AnimationTrigger.onPageLoad),
+    setupAnimations(
+      animationsMap.values.where((anim) =>
+          anim.trigger == AnimationTrigger.onActionTrigger ||
+          !anim.applyInitialState),
       this,
     );
 
@@ -59,9 +77,19 @@ class _AddCarWidgetState extends State<AddCarWidget>
   }
 
   @override
+  void dispose() {
+    carColorController?.dispose();
+    carNameController?.dispose();
+    carMileageController?.dispose();
+    tempDefaultController?.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         automaticallyImplyLeading: false,
@@ -83,7 +111,6 @@ class _AddCarWidgetState extends State<AddCarWidget>
         centerTitle: false,
         elevation: 0,
       ),
-      backgroundColor: Colors.white,
       body: SafeArea(
         child: StreamBuilder<List<ProductNameRecord>>(
           stream: queryProductNameRecord(
@@ -103,9 +130,10 @@ class _AddCarWidgetState extends State<AddCarWidget>
                 ),
               );
             }
-            List<ProductNameRecord> columnProductNameRecordList = snapshot.data;
+            List<ProductNameRecord> columnProductNameRecordList =
+                snapshot.data!;
             // Return an empty Container when the document does not exist.
-            if (snapshot.data.isEmpty) {
+            if (snapshot.data!.isEmpty) {
               return Container();
             }
             final columnProductNameRecord =
@@ -125,7 +153,8 @@ class _AddCarWidgetState extends State<AddCarWidget>
                         width: MediaQuery.of(context).size.width,
                         height: 200,
                         fit: BoxFit.fitHeight,
-                      ).animated([animationsMap['imageOnPageLoadAnimation']]),
+                      ).animateOnPageLoad(
+                          animationsMap['imageOnPageLoadAnimation']!),
                     ],
                   ),
                   Padding(
@@ -138,31 +167,41 @@ class _AddCarWidgetState extends State<AddCarWidget>
                           onPressed: () async {
                             final selectedMedia = await selectMedia(
                               mediaSource: MediaSource.photoGallery,
+                              multiImage: false,
                             );
                             if (selectedMedia != null &&
-                                validateFileFormat(
-                                    selectedMedia.storagePath, context)) {
-                              showUploadMessage(
-                                context,
-                                'Uploading file...',
-                                showLoading: true,
-                              );
-                              final downloadUrl = await uploadData(
-                                  selectedMedia.storagePath,
-                                  selectedMedia.bytes);
-                              ScaffoldMessenger.of(context)
-                                  .hideCurrentSnackBar();
-                              if (downloadUrl != null) {
-                                setState(() => uploadedFileUrl = downloadUrl);
+                                selectedMedia.every((m) => validateFileFormat(
+                                    m.storagePath, context))) {
+                              setState(() => isMediaUploading = true);
+                              var downloadUrls = <String>[];
+                              try {
                                 showUploadMessage(
                                   context,
-                                  'Success!',
+                                  'Uploading file...',
+                                  showLoading: true,
                                 );
+                                downloadUrls = (await Future.wait(
+                                  selectedMedia.map(
+                                    (m) async => await uploadData(
+                                        m.storagePath, m.bytes),
+                                  ),
+                                ))
+                                    .where((u) => u != null)
+                                    .map((u) => u!)
+                                    .toList();
+                              } finally {
+                                ScaffoldMessenger.of(context)
+                                    .hideCurrentSnackBar();
+                                isMediaUploading = false;
+                              }
+                              if (downloadUrls.length == selectedMedia.length) {
+                                setState(
+                                    () => uploadedFileUrl = downloadUrls.first);
+                                showUploadMessage(context, 'Success!');
                               } else {
+                                setState(() {});
                                 showUploadMessage(
-                                  context,
-                                  'Failed to upload media',
-                                );
+                                    context, 'Failed to upload media');
                                 return;
                               }
                             }
@@ -184,7 +223,7 @@ class _AddCarWidgetState extends State<AddCarWidget>
                               color: Colors.transparent,
                               width: 1,
                             ),
-                            borderRadius: 8,
+                            borderRadius: BorderRadius.circular(8),
                           ),
                         ),
                       ],
@@ -221,6 +260,20 @@ class _AddCarWidgetState extends State<AddCarWidget>
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(
                             color: Color(0xFFDBE2E7),
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color(0x00000000),
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color(0x00000000),
                             width: 2,
                           ),
                           borderRadius: BorderRadius.circular(8),
@@ -273,6 +326,20 @@ class _AddCarWidgetState extends State<AddCarWidget>
                           ),
                           borderRadius: BorderRadius.circular(8),
                         ),
+                        errorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color(0x00000000),
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color(0x00000000),
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                         filled: true,
                         fillColor: Colors.white,
                         contentPadding:
@@ -317,6 +384,20 @@ class _AddCarWidgetState extends State<AddCarWidget>
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(
                             color: Color(0xFFDBE2E7),
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color(0x00000000),
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color(0x00000000),
                             width: 2,
                           ),
                           borderRadius: BorderRadius.circular(8),
@@ -369,6 +450,20 @@ class _AddCarWidgetState extends State<AddCarWidget>
                           ),
                           borderRadius: BorderRadius.circular(8),
                         ),
+                        errorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color(0x00000000),
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color(0x00000000),
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                         filled: true,
                         fillColor: Colors.white,
                         contentPadding:
@@ -390,11 +485,11 @@ class _AddCarWidgetState extends State<AddCarWidget>
                         onPressed: () async {
                           final productNameCreateData =
                               createProductNameRecordData(
-                            productName: carNameController.text,
+                            productName: carNameController!.text,
                             productImage: uploadedFileUrl,
-                            productColor: carColorController.text,
-                            productMileage: carMileageController.text,
-                            productDefaulTemp: tempDefaultController.text,
+                            productColor: carColorController!.text,
+                            productMileage: carMileageController!.text,
+                            productDefaulTemp: tempDefaultController!.text,
                           );
                           await ProductNameRecord.collection
                               .doc()
@@ -423,7 +518,7 @@ class _AddCarWidgetState extends State<AddCarWidget>
                             color: Colors.transparent,
                             width: 1,
                           ),
-                          borderRadius: 30,
+                          borderRadius: BorderRadius.circular(30),
                         ),
                       ),
                     ),

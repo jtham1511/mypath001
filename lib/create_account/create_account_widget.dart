@@ -12,18 +12,20 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class CreateAccountWidget extends StatefulWidget {
-  const CreateAccountWidget({Key key}) : super(key: key);
+  const CreateAccountWidget({Key? key}) : super(key: key);
 
   @override
   _CreateAccountWidgetState createState() => _CreateAccountWidgetState();
 }
 
 class _CreateAccountWidgetState extends State<CreateAccountWidget> {
-  TextEditingController confirmPasswordController;
-  bool confirmPasswordVisibility;
-  TextEditingController emailAddressController;
-  TextEditingController passwordController;
-  bool passwordVisibility;
+  TextEditingController? confirmPasswordController;
+
+  late bool confirmPasswordVisibility;
+  TextEditingController? emailAddressController;
+  TextEditingController? passwordController;
+
+  late bool passwordVisibility;
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -34,6 +36,14 @@ class _CreateAccountWidgetState extends State<CreateAccountWidget> {
     emailAddressController = TextEditingController();
     passwordController = TextEditingController();
     passwordVisibility = false;
+  }
+
+  @override
+  void dispose() {
+    confirmPasswordController?.dispose();
+    emailAddressController?.dispose();
+    passwordController?.dispose();
+    super.dispose();
   }
 
   @override
@@ -160,6 +170,20 @@ class _CreateAccountWidgetState extends State<CreateAccountWidget> {
                               ),
                               borderRadius: BorderRadius.circular(8),
                             ),
+                            errorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0x00000000),
+                                width: 2,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0x00000000),
+                                width: 2,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                             filled: true,
                             fillColor: Colors.white,
                             contentPadding:
@@ -196,7 +220,7 @@ class _CreateAccountWidgetState extends State<CreateAccountWidget> {
                                       fontSize: 14,
                                       fontWeight: FontWeight.normal,
                                     ),
-                            hintText: 'Enter your email here...',
+                            hintText: 'Enter your password here...',
                             hintStyle:
                                 FlutterFlowTheme.of(context).bodyText1.override(
                                       fontFamily: 'Lexend Deca',
@@ -218,6 +242,20 @@ class _CreateAccountWidgetState extends State<CreateAccountWidget> {
                               ),
                               borderRadius: BorderRadius.circular(8),
                             ),
+                            errorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0x00000000),
+                                width: 2,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0x00000000),
+                                width: 2,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                             filled: true,
                             fillColor: Colors.white,
                             contentPadding:
@@ -226,6 +264,7 @@ class _CreateAccountWidgetState extends State<CreateAccountWidget> {
                               onTap: () => setState(
                                 () => passwordVisibility = !passwordVisibility,
                               ),
+                              focusNode: FocusNode(skipTraversal: true),
                               child: Icon(
                                 passwordVisibility
                                     ? Icons.visibility_outlined
@@ -266,7 +305,7 @@ class _CreateAccountWidgetState extends State<CreateAccountWidget> {
                                       fontSize: 14,
                                       fontWeight: FontWeight.normal,
                                     ),
-                            hintText: 'Use the same passwrod as above...',
+                            hintText: 'Enter the same passwrod as above...',
                             hintStyle:
                                 FlutterFlowTheme.of(context).bodyText1.override(
                                       fontFamily: 'Lexend Deca',
@@ -288,6 +327,20 @@ class _CreateAccountWidgetState extends State<CreateAccountWidget> {
                               ),
                               borderRadius: BorderRadius.circular(8),
                             ),
+                            errorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0x00000000),
+                                width: 2,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0x00000000),
+                                width: 2,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                             filled: true,
                             fillColor: Colors.white,
                             contentPadding:
@@ -297,6 +350,7 @@ class _CreateAccountWidgetState extends State<CreateAccountWidget> {
                                 () => confirmPasswordVisibility =
                                     !confirmPasswordVisibility,
                               ),
+                              focusNode: FocusNode(skipTraversal: true),
                               child: Icon(
                                 confirmPasswordVisibility
                                     ? Icons.visibility_outlined
@@ -368,15 +422,15 @@ class _CreateAccountWidgetState extends State<CreateAccountWidget> {
                                 color: Colors.transparent,
                                 width: 1,
                               ),
-                              borderRadius: 0,
+                              borderRadius: BorderRadius.circular(0),
                             ),
                           ),
                         ],
                       ),
                       FFButtonWidget(
                         onPressed: () async {
-                          if (passwordController.text !=
-                              confirmPasswordController.text) {
+                          if (passwordController?.text !=
+                              confirmPasswordController?.text) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
@@ -389,8 +443,8 @@ class _CreateAccountWidgetState extends State<CreateAccountWidget> {
 
                           final user = await createAccountWithEmail(
                             context,
-                            emailAddressController.text,
-                            passwordController.text,
+                            emailAddressController!.text,
+                            passwordController!.text,
                           );
                           if (user == null) {
                             return;
@@ -420,7 +474,7 @@ class _CreateAccountWidgetState extends State<CreateAccountWidget> {
                             color: Colors.transparent,
                             width: 1,
                           ),
-                          borderRadius: 50,
+                          borderRadius: BorderRadius.circular(50),
                         ),
                       ),
                     ],
@@ -520,7 +574,7 @@ class _CreateAccountWidgetState extends State<CreateAccountWidget> {
                                         createUsersRecordData(
                                       displayName: 'Jane Williams',
                                     );
-                                    await currentUserReference
+                                    await currentUserReference!
                                         .update(usersUpdateData);
                                     await Navigator.push(
                                       context,
@@ -547,7 +601,7 @@ class _CreateAccountWidgetState extends State<CreateAccountWidget> {
                                       color: Colors.transparent,
                                       width: 1,
                                     ),
-                                    borderRadius: 40,
+                                    borderRadius: BorderRadius.circular(40),
                                   ),
                                 ),
                               ),

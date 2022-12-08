@@ -14,7 +14,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 
 class LoginCopyWidget extends StatefulWidget {
-  const LoginCopyWidget({Key key}) : super(key: key);
+  const LoginCopyWidget({Key? key}) : super(key: key);
 
   @override
   _LoginCopyWidgetState createState() => _LoginCopyWidgetState();
@@ -217,7 +217,7 @@ class _LoginCopyWidgetState extends State<LoginCopyWidget> {
                                   color: Colors.transparent,
                                   width: 1,
                                 ),
-                                borderRadius: 0,
+                                borderRadius: BorderRadius.circular(0),
                               ),
                             ),
                           ],
@@ -248,7 +248,7 @@ class _LoginCopyWidgetState extends State<LoginCopyWidget> {
                               color: Colors.transparent,
                               width: 1,
                             ),
-                            borderRadius: 50,
+                            borderRadius: BorderRadius.circular(50),
                           ),
                         ),
                       ],
@@ -299,7 +299,7 @@ class _LoginCopyWidgetState extends State<LoginCopyWidget> {
                                         color: Colors.transparent,
                                         width: 1,
                                       ),
-                                      borderRadius: 0,
+                                      borderRadius: BorderRadius.circular(0),
                                     ),
                                   ),
                                 ),
@@ -415,7 +415,7 @@ class _LoginCopyWidgetState extends State<LoginCopyWidget> {
                                         color: Colors.transparent,
                                         width: 1,
                                       ),
-                                      borderRadius: 50,
+                                      borderRadius: BorderRadius.circular(50),
                                     ),
                                   ),
                                 ),

@@ -8,7 +8,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class PaymentCompleteWidget extends StatefulWidget {
-  const PaymentCompleteWidget({Key key}) : super(key: key);
+  const PaymentCompleteWidget({Key? key}) : super(key: key);
 
   @override
   _PaymentCompleteWidgetState createState() => _PaymentCompleteWidgetState();
@@ -203,7 +203,7 @@ class _PaymentCompleteWidgetState extends State<PaymentCompleteWidget> {
                           color: Colors.transparent,
                           width: 1,
                         ),
-                        borderRadius: 40,
+                        borderRadius: BorderRadius.circular(40),
                       ),
                     ),
                   ],

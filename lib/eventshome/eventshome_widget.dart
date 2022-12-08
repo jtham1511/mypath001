@@ -9,21 +9,27 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class EventshomeWidget extends StatefulWidget {
-  const EventshomeWidget({Key key}) : super(key: key);
+  const EventshomeWidget({Key? key}) : super(key: key);
 
   @override
   _EventshomeWidgetState createState() => _EventshomeWidgetState();
 }
 
 class _EventshomeWidgetState extends State<EventshomeWidget> {
-  String choiceChipsValue;
-  TextEditingController textController;
+  String? choiceChipsValue;
+  TextEditingController? textController;
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
     textController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    textController?.dispose();
+    super.dispose();
   }
 
   @override
@@ -178,6 +184,27 @@ class _EventshomeWidgetState extends State<EventshomeWidget> {
                                             topRight: Radius.circular(4.0),
                                           ),
                                         ),
+                                        errorBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: Color(0x00000000),
+                                            width: 1,
+                                          ),
+                                          borderRadius: const BorderRadius.only(
+                                            topLeft: Radius.circular(4.0),
+                                            topRight: Radius.circular(4.0),
+                                          ),
+                                        ),
+                                        focusedErrorBorder:
+                                            UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: Color(0x00000000),
+                                            width: 1,
+                                          ),
+                                          borderRadius: const BorderRadius.only(
+                                            topLeft: Radius.circular(4.0),
+                                            topRight: Radius.circular(4.0),
+                                          ),
+                                        ),
                                       ),
                                       style: FlutterFlowTheme.of(context)
                                           .bodyText2
@@ -222,16 +249,14 @@ class _EventshomeWidgetState extends State<EventshomeWidget> {
               Padding(
                 padding: EdgeInsetsDirectional.fromSTEB(8, 4, 0, 0),
                 child: FlutterFlowChoiceChips(
-                  initiallySelected: choiceChipsValue != null
-                      ? [choiceChipsValue]
-                      : ['Popular'],
+                  initiallySelected: ['Popular'],
                   options: [
                     ChipData('Popular'),
                     ChipData('Nearby'),
                     ChipData('Happening Now')
                   ],
                   onChanged: (val) =>
-                      setState(() => choiceChipsValue = val.first),
+                      setState(() => choiceChipsValue = val?.first),
                   selectedChipStyle: ChipStyle(
                     backgroundColor: Color(0xFF4B39EF),
                     textStyle: FlutterFlowTheme.of(context).bodyText1.override(
@@ -259,6 +284,7 @@ class _EventshomeWidgetState extends State<EventshomeWidget> {
                   chipSpacing: 12,
                   multiselect: false,
                   initialized: choiceChipsValue != null,
+                  alignment: WrapAlignment.start,
                 ),
               ),
               Padding(

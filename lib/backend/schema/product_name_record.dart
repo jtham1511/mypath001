@@ -11,33 +11,25 @@ abstract class ProductNameRecord
   static Serializer<ProductNameRecord> get serializer =>
       _$productNameRecordSerializer;
 
-  @nullable
-  String get productName;
+  String? get productName;
 
-  @nullable
-  String get productImage;
+  String? get productImage;
 
-  @nullable
-  String get productColor;
+  String? get productColor;
 
-  @nullable
-  String get productDefaulTemp;
+  String? get productDefaulTemp;
 
-  @nullable
-  String get productMileage;
+  String? get productMileage;
 
-  @nullable
-  LatLng get productLocation;
+  LatLng? get productLocation;
 
-  @nullable
-  DocumentReference get productUser;
+  DocumentReference? get productUser;
 
-  @nullable
-  DocumentReference get productPayment;
+  DocumentReference? get productPayment;
 
-  @nullable
   @BuiltValueField(wireName: kDocumentReferenceField)
-  DocumentReference get reference;
+  DocumentReference? get ffRef;
+  DocumentReference get reference => ffRef!;
 
   static void _initializeBuilder(ProductNameRecordBuilder builder) => builder
     ..productName = ''
@@ -51,11 +43,11 @@ abstract class ProductNameRecord
 
   static Stream<ProductNameRecord> getDocument(DocumentReference ref) => ref
       .snapshots()
-      .map((s) => serializers.deserializeWith(serializer, serializedData(s)));
+      .map((s) => serializers.deserializeWith(serializer, serializedData(s))!);
 
   static Future<ProductNameRecord> getDocumentOnce(DocumentReference ref) => ref
       .get()
-      .then((s) => serializers.deserializeWith(serializer, serializedData(s)));
+      .then((s) => serializers.deserializeWith(serializer, serializedData(s))!);
 
   ProductNameRecord._();
   factory ProductNameRecord([void Function(ProductNameRecordBuilder) updates]) =
@@ -64,27 +56,33 @@ abstract class ProductNameRecord
   static ProductNameRecord getDocumentFromData(
           Map<String, dynamic> data, DocumentReference reference) =>
       serializers.deserializeWith(serializer,
-          {...mapFromFirestore(data), kDocumentReferenceField: reference});
+          {...mapFromFirestore(data), kDocumentReferenceField: reference})!;
 }
 
 Map<String, dynamic> createProductNameRecordData({
-  String productName,
-  String productImage,
-  String productColor,
-  String productDefaulTemp,
-  String productMileage,
-  LatLng productLocation,
-  DocumentReference productUser,
-  DocumentReference productPayment,
-}) =>
-    serializers.toFirestore(
-        ProductNameRecord.serializer,
-        ProductNameRecord((p) => p
-          ..productName = productName
-          ..productImage = productImage
-          ..productColor = productColor
-          ..productDefaulTemp = productDefaulTemp
-          ..productMileage = productMileage
-          ..productLocation = productLocation
-          ..productUser = productUser
-          ..productPayment = productPayment));
+  String? productName,
+  String? productImage,
+  String? productColor,
+  String? productDefaulTemp,
+  String? productMileage,
+  LatLng? productLocation,
+  DocumentReference? productUser,
+  DocumentReference? productPayment,
+}) {
+  final firestoreData = serializers.toFirestore(
+    ProductNameRecord.serializer,
+    ProductNameRecord(
+      (p) => p
+        ..productName = productName
+        ..productImage = productImage
+        ..productColor = productColor
+        ..productDefaulTemp = productDefaulTemp
+        ..productMileage = productMileage
+        ..productLocation = productLocation
+        ..productUser = productUser
+        ..productPayment = productPayment,
+    ),
+  );
+
+  return firestoreData;
+}

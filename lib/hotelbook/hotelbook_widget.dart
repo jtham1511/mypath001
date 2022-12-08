@@ -9,15 +9,15 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class HotelbookWidget extends StatefulWidget {
-  const HotelbookWidget({Key key}) : super(key: key);
+  const HotelbookWidget({Key? key}) : super(key: key);
 
   @override
   _HotelbookWidgetState createState() => _HotelbookWidgetState();
 }
 
 class _HotelbookWidgetState extends State<HotelbookWidget> {
-  String amentitiesValue;
-  String choiceChipsValue;
+  String? amentitiesValue;
+  String? choiceChipsValue;
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -155,13 +155,12 @@ class _HotelbookWidgetState extends State<HotelbookWidget> {
                   Padding(
                     padding: EdgeInsetsDirectional.fromSTEB(24, 12, 24, 0),
                     child: FlutterFlowChoiceChips(
-                      initiallySelected: [amentitiesValue],
                       options: [
                         ChipData('Hot Tub Access'),
                         ChipData('No Access')
                       ],
                       onChanged: (val) =>
-                          setState(() => amentitiesValue = val.first),
+                          setState(() => amentitiesValue = val?.first),
                       selectedChipStyle: ChipStyle(
                         backgroundColor: Color(0xFF1D2429),
                         textStyle:
@@ -194,6 +193,7 @@ class _HotelbookWidgetState extends State<HotelbookWidget> {
                       ),
                       chipSpacing: 12,
                       multiselect: false,
+                      alignment: WrapAlignment.start,
                     ),
                   ),
                   Padding(
@@ -203,13 +203,12 @@ class _HotelbookWidgetState extends State<HotelbookWidget> {
                       children: [
                         Expanded(
                           child: FlutterFlowChoiceChips(
-                            initiallySelected: [choiceChipsValue],
                             options: [
                               ChipData('Breakfast'),
                               ChipData('No Breakfast')
                             ],
                             onChanged: (val) =>
-                                setState(() => choiceChipsValue = val.first),
+                                setState(() => choiceChipsValue = val?.first),
                             selectedChipStyle: ChipStyle(
                               backgroundColor: Color(0xFF1E2429),
                               textStyle: FlutterFlowTheme.of(context)
@@ -244,6 +243,7 @@ class _HotelbookWidgetState extends State<HotelbookWidget> {
                             ),
                             chipSpacing: 12,
                             multiselect: false,
+                            alignment: WrapAlignment.start,
                           ),
                         ),
                       ],
@@ -411,7 +411,7 @@ class _HotelbookWidgetState extends State<HotelbookWidget> {
                     color: Colors.transparent,
                     width: 1,
                   ),
-                  borderRadius: 16,
+                  borderRadius: BorderRadius.circular(16),
                 ),
               ),
             ),

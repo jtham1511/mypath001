@@ -11,13 +11,12 @@ abstract class InstagramPostRecord
   static Serializer<InstagramPostRecord> get serializer =>
       _$instagramPostRecordSerializer;
 
-  @nullable
   @BuiltValueField(wireName: 'post_fav')
-  bool get postFav;
+  bool? get postFav;
 
-  @nullable
   @BuiltValueField(wireName: kDocumentReferenceField)
-  DocumentReference get reference;
+  DocumentReference? get ffRef;
+  DocumentReference get reference => ffRef!;
 
   static void _initializeBuilder(InstagramPostRecordBuilder builder) =>
       builder..postFav = false;
@@ -27,11 +26,11 @@ abstract class InstagramPostRecord
 
   static Stream<InstagramPostRecord> getDocument(DocumentReference ref) => ref
       .snapshots()
-      .map((s) => serializers.deserializeWith(serializer, serializedData(s)));
+      .map((s) => serializers.deserializeWith(serializer, serializedData(s))!);
 
   static Future<InstagramPostRecord> getDocumentOnce(DocumentReference ref) =>
       ref.get().then(
-          (s) => serializers.deserializeWith(serializer, serializedData(s)));
+          (s) => serializers.deserializeWith(serializer, serializedData(s))!);
 
   InstagramPostRecord._();
   factory InstagramPostRecord(
@@ -41,11 +40,18 @@ abstract class InstagramPostRecord
   static InstagramPostRecord getDocumentFromData(
           Map<String, dynamic> data, DocumentReference reference) =>
       serializers.deserializeWith(serializer,
-          {...mapFromFirestore(data), kDocumentReferenceField: reference});
+          {...mapFromFirestore(data), kDocumentReferenceField: reference})!;
 }
 
 Map<String, dynamic> createInstagramPostRecordData({
-  bool postFav,
-}) =>
-    serializers.toFirestore(InstagramPostRecord.serializer,
-        InstagramPostRecord((i) => i..postFav = postFav));
+  bool? postFav,
+}) {
+  final firestoreData = serializers.toFirestore(
+    InstagramPostRecord.serializer,
+    InstagramPostRecord(
+      (i) => i..postFav = postFav,
+    ),
+  );
+
+  return firestoreData;
+}

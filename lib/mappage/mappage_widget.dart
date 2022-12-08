@@ -7,22 +7,28 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class MappageWidget extends StatefulWidget {
-  const MappageWidget({Key key}) : super(key: key);
+  const MappageWidget({Key? key}) : super(key: key);
 
   @override
   _MappageWidgetState createState() => _MappageWidgetState();
 }
 
 class _MappageWidgetState extends State<MappageWidget> {
-  LatLng googleMapsCenter;
-  Completer<GoogleMapController> googleMapsController;
-  TextEditingController textController;
+  LatLng? googleMapsCenter;
+  final googleMapsController = Completer<GoogleMapController>();
+  TextEditingController? textController;
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
     textController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    textController?.dispose();
+    super.dispose();
   }
 
   @override
@@ -220,6 +226,27 @@ class _MappageWidgetState extends State<MappageWidget> {
                                           ),
                                         ),
                                         focusedBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: Color(0x00000000),
+                                            width: 1,
+                                          ),
+                                          borderRadius: const BorderRadius.only(
+                                            topLeft: Radius.circular(4.0),
+                                            topRight: Radius.circular(4.0),
+                                          ),
+                                        ),
+                                        errorBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: Color(0x00000000),
+                                            width: 1,
+                                          ),
+                                          borderRadius: const BorderRadius.only(
+                                            topLeft: Radius.circular(4.0),
+                                            topRight: Radius.circular(4.0),
+                                          ),
+                                        ),
+                                        focusedErrorBorder:
+                                            UnderlineInputBorder(
                                           borderSide: BorderSide(
                                             color: Color(0x00000000),
                                             width: 1,

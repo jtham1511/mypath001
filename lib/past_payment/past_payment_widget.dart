@@ -6,7 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class PastPaymentWidget extends StatefulWidget {
-  const PastPaymentWidget({Key key}) : super(key: key);
+  const PastPaymentWidget({Key? key}) : super(key: key);
 
   @override
   _PastPaymentWidgetState createState() => _PastPaymentWidgetState();
@@ -19,6 +19,7 @@ class _PastPaymentWidgetState extends State<PastPaymentWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
+      backgroundColor: Color(0xFFF1F4F8),
       appBar: AppBar(
         backgroundColor: Colors.white,
         automaticallyImplyLeading: false,
@@ -40,7 +41,6 @@ class _PastPaymentWidgetState extends State<PastPaymentWidget> {
         centerTitle: true,
         elevation: 0,
       ),
-      backgroundColor: Color(0xFFF1F4F8),
       body: SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.max,

@@ -13,27 +13,37 @@ import 'package:google_fonts/google_fonts.dart';
 
 class EditProfileWidget extends StatefulWidget {
   const EditProfileWidget({
-    Key key,
+    Key? key,
     this.userProfile,
   }) : super(key: key);
 
-  final DocumentReference userProfile;
+  final DocumentReference? userProfile;
 
   @override
   _EditProfileWidgetState createState() => _EditProfileWidgetState();
 }
 
 class _EditProfileWidgetState extends State<EditProfileWidget> {
+  bool isMediaUploading = false;
   String uploadedFileUrl = '';
-  TextEditingController textController1;
-  TextEditingController emailAddressController;
-  TextEditingController myBioController;
+
+  TextEditingController? textController1;
+  TextEditingController? emailAddressController;
+  TextEditingController? myBioController;
   final scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  void dispose() {
+    emailAddressController?.dispose();
+    textController1?.dispose();
+    myBioController?.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<UsersRecord>(
-      stream: UsersRecord.getDocument(currentUserReference),
+      stream: UsersRecord.getDocument(currentUserReference!),
       builder: (context, snapshot) {
         // Customize what your widget looks like when it's loading.
         if (!snapshot.hasData) {
@@ -48,9 +58,10 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
             ),
           );
         }
-        final editProfileUsersRecord = snapshot.data;
+        final editProfileUsersRecord = snapshot.data!;
         return Scaffold(
           key: scaffoldKey,
+          backgroundColor: Colors.white,
           appBar: AppBar(
             backgroundColor: Colors.white,
             automaticallyImplyLeading: false,
@@ -77,7 +88,6 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
             centerTitle: true,
             elevation: 0,
           ),
-          backgroundColor: Colors.white,
           body: SafeArea(
             child: SingleChildScrollView(
               child: Column(
@@ -125,31 +135,41 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                           onPressed: () async {
                             final selectedMedia = await selectMedia(
                               mediaSource: MediaSource.photoGallery,
+                              multiImage: false,
                             );
                             if (selectedMedia != null &&
-                                validateFileFormat(
-                                    selectedMedia.storagePath, context)) {
-                              showUploadMessage(
-                                context,
-                                'Uploading file...',
-                                showLoading: true,
-                              );
-                              final downloadUrl = await uploadData(
-                                  selectedMedia.storagePath,
-                                  selectedMedia.bytes);
-                              ScaffoldMessenger.of(context)
-                                  .hideCurrentSnackBar();
-                              if (downloadUrl != null) {
-                                setState(() => uploadedFileUrl = downloadUrl);
+                                selectedMedia.every((m) => validateFileFormat(
+                                    m.storagePath, context))) {
+                              setState(() => isMediaUploading = true);
+                              var downloadUrls = <String>[];
+                              try {
                                 showUploadMessage(
                                   context,
-                                  'Success!',
+                                  'Uploading file...',
+                                  showLoading: true,
                                 );
+                                downloadUrls = (await Future.wait(
+                                  selectedMedia.map(
+                                    (m) async => await uploadData(
+                                        m.storagePath, m.bytes),
+                                  ),
+                                ))
+                                    .where((u) => u != null)
+                                    .map((u) => u!)
+                                    .toList();
+                              } finally {
+                                ScaffoldMessenger.of(context)
+                                    .hideCurrentSnackBar();
+                                isMediaUploading = false;
+                              }
+                              if (downloadUrls.length == selectedMedia.length) {
+                                setState(
+                                    () => uploadedFileUrl = downloadUrls.first);
+                                showUploadMessage(context, 'Success!');
                               } else {
+                                setState(() {});
                                 showUploadMessage(
-                                  context,
-                                  'Failed to upload media',
-                                );
+                                    context, 'Failed to upload media');
                                 return;
                               }
                             }
@@ -171,7 +191,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                               color: Colors.transparent,
                               width: 1,
                             ),
-                            borderRadius: 8,
+                            borderRadius: BorderRadius.circular(8),
                           ),
                         ),
                       ],
@@ -215,6 +235,20 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                           ),
                           borderRadius: BorderRadius.circular(8),
                         ),
+                        errorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color(0x00000000),
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color(0x00000000),
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                         filled: true,
                         fillColor: Colors.white,
                         contentPadding:
@@ -250,9 +284,9 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                           );
                         }
                         List<UsersRecord> emailAddressUsersRecordList =
-                            snapshot.data;
+                            snapshot.data!;
                         // Return an empty Container when the document does not exist.
-                        if (snapshot.data.isEmpty) {
+                        if (snapshot.data!.isEmpty) {
                           return Container();
                         }
                         final emailAddressUsersRecord =
@@ -292,6 +326,20 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                             focusedBorder: OutlineInputBorder(
                               borderSide: BorderSide(
                                 color: Color(0xFFDBE2E7),
+                                width: 2,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0x00000000),
+                                width: 2,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0x00000000),
                                 width: 2,
                               ),
                               borderRadius: BorderRadius.circular(8),
@@ -350,6 +398,20 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                           ),
                           borderRadius: BorderRadius.circular(8),
                         ),
+                        errorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color(0x00000000),
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color(0x00000000),
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                         filled: true,
                         fillColor: Colors.white,
                         contentPadding:
@@ -398,7 +460,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                             color: Colors.transparent,
                             width: 1,
                           ),
-                          borderRadius: 30,
+                          borderRadius: BorderRadius.circular(30),
                         ),
                       ),
                     ),

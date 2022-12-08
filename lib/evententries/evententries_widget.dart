@@ -6,7 +6,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class EvententriesWidget extends StatefulWidget {
-  const EvententriesWidget({Key key}) : super(key: key);
+  const EvententriesWidget({Key? key}) : super(key: key);
 
   @override
   _EvententriesWidgetState createState() => _EvententriesWidgetState();

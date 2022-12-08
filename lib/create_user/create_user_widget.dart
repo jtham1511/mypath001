@@ -12,16 +12,18 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class CreateUserWidget extends StatefulWidget {
-  const CreateUserWidget({Key key}) : super(key: key);
+  const CreateUserWidget({Key? key}) : super(key: key);
 
   @override
   _CreateUserWidgetState createState() => _CreateUserWidgetState();
 }
 
 class _CreateUserWidgetState extends State<CreateUserWidget> {
+  bool isMediaUploading = false;
   String uploadedFileUrl = '';
-  TextEditingController textController1;
-  TextEditingController userCityController;
+
+  TextEditingController? textController1;
+  TextEditingController? userCityController;
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -32,9 +34,16 @@ class _CreateUserWidgetState extends State<CreateUserWidget> {
   }
 
   @override
+  void dispose() {
+    textController1?.dispose();
+    userCityController?.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return StreamBuilder<UsersRecord>(
-      stream: UsersRecord.getDocument(currentUserReference),
+      stream: UsersRecord.getDocument(currentUserReference!),
       builder: (context, snapshot) {
         // Customize what your widget looks like when it's loading.
         if (!snapshot.hasData) {
@@ -49,9 +58,10 @@ class _CreateUserWidgetState extends State<CreateUserWidget> {
             ),
           );
         }
-        final createUserUsersRecord = snapshot.data;
+        final createUserUsersRecord = snapshot.data!;
         return Scaffold(
           key: scaffoldKey,
+          backgroundColor: FlutterFlowTheme.of(context).customColor1,
           appBar: AppBar(
             backgroundColor: Colors.white,
             automaticallyImplyLeading: false,
@@ -73,7 +83,6 @@ class _CreateUserWidgetState extends State<CreateUserWidget> {
             centerTitle: false,
             elevation: 0,
           ),
-          backgroundColor: FlutterFlowTheme.of(context).customColor1,
           body: SafeArea(
             child: GestureDetector(
               onTap: () => FocusScope.of(context).unfocus(),
@@ -119,31 +128,41 @@ class _CreateUserWidgetState extends State<CreateUserWidget> {
                           onPressed: () async {
                             final selectedMedia = await selectMedia(
                               mediaSource: MediaSource.photoGallery,
+                              multiImage: false,
                             );
                             if (selectedMedia != null &&
-                                validateFileFormat(
-                                    selectedMedia.storagePath, context)) {
-                              showUploadMessage(
-                                context,
-                                'Uploading file...',
-                                showLoading: true,
-                              );
-                              final downloadUrl = await uploadData(
-                                  selectedMedia.storagePath,
-                                  selectedMedia.bytes);
-                              ScaffoldMessenger.of(context)
-                                  .hideCurrentSnackBar();
-                              if (downloadUrl != null) {
-                                setState(() => uploadedFileUrl = downloadUrl);
+                                selectedMedia.every((m) => validateFileFormat(
+                                    m.storagePath, context))) {
+                              setState(() => isMediaUploading = true);
+                              var downloadUrls = <String>[];
+                              try {
                                 showUploadMessage(
                                   context,
-                                  'Success!',
+                                  'Uploading file...',
+                                  showLoading: true,
                                 );
+                                downloadUrls = (await Future.wait(
+                                  selectedMedia.map(
+                                    (m) async => await uploadData(
+                                        m.storagePath, m.bytes),
+                                  ),
+                                ))
+                                    .where((u) => u != null)
+                                    .map((u) => u!)
+                                    .toList();
+                              } finally {
+                                ScaffoldMessenger.of(context)
+                                    .hideCurrentSnackBar();
+                                isMediaUploading = false;
+                              }
+                              if (downloadUrls.length == selectedMedia.length) {
+                                setState(
+                                    () => uploadedFileUrl = downloadUrls.first);
+                                showUploadMessage(context, 'Success!');
                               } else {
+                                setState(() {});
                                 showUploadMessage(
-                                  context,
-                                  'Failed to upload media',
-                                );
+                                    context, 'Failed to upload media');
                                 return;
                               }
                             }
@@ -165,7 +184,7 @@ class _CreateUserWidgetState extends State<CreateUserWidget> {
                               color: Colors.transparent,
                               width: 1,
                             ),
-                            borderRadius: 30,
+                            borderRadius: BorderRadius.circular(30),
                           ),
                         ),
                       ],
@@ -203,6 +222,20 @@ class _CreateUserWidgetState extends State<CreateUserWidget> {
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(
                             color: Color(0xFFDBE2E7),
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color(0x00000000),
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color(0x00000000),
                             width: 2,
                           ),
                           borderRadius: BorderRadius.circular(8),
@@ -256,6 +289,20 @@ class _CreateUserWidgetState extends State<CreateUserWidget> {
                           ),
                           borderRadius: BorderRadius.circular(8),
                         ),
+                        errorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color(0x00000000),
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Color(0x00000000),
+                            width: 2,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                         filled: true,
                         fillColor: Colors.white,
                         contentPadding:
@@ -276,9 +323,9 @@ class _CreateUserWidgetState extends State<CreateUserWidget> {
                       child: FFButtonWidget(
                         onPressed: () async {
                           final usersUpdateData = createUsersRecordData(
-                            displayName: textController1.text,
+                            displayName: textController1!.text,
                             photoUrl: uploadedFileUrl,
-                            userCity: userCityController.text,
+                            userCity: userCityController!.text,
                           );
                           await createUserUsersRecord.reference
                               .update(usersUpdateData);
@@ -306,7 +353,7 @@ class _CreateUserWidgetState extends State<CreateUserWidget> {
                             color: Colors.transparent,
                             width: 1,
                           ),
-                          borderRadius: 30,
+                          borderRadius: BorderRadius.circular(30),
                         ),
                       ),
                     ),

@@ -8,7 +8,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class PaymentsWidget extends StatefulWidget {
-  const PaymentsWidget({Key key}) : super(key: key);
+  const PaymentsWidget({Key? key}) : super(key: key);
 
   @override
   _PaymentsWidgetState createState() => _PaymentsWidgetState();
@@ -83,7 +83,7 @@ class _PaymentsWidgetState extends State<PaymentsWidget> {
                                         ),
                                       );
                                     },
-                                  );
+                                  ).then((value) => setState(() {}));
                                 },
                                 text: 'Pay Early',
                                 options: FFButtonOptions(
@@ -103,7 +103,7 @@ class _PaymentsWidgetState extends State<PaymentsWidget> {
                                     color: Colors.transparent,
                                     width: 1,
                                   ),
-                                  borderRadius: 40,
+                                  borderRadius: BorderRadius.circular(40),
                                 ),
                               ),
                             ],
@@ -667,7 +667,7 @@ class _PaymentsWidgetState extends State<PaymentsWidget> {
                     color: Colors.transparent,
                     width: 1,
                   ),
-                  borderRadius: 12,
+                  borderRadius: BorderRadius.circular(12),
                 ),
               ),
             ),

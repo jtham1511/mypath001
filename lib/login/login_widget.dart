@@ -16,16 +16,17 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 
 class LoginWidget extends StatefulWidget {
-  const LoginWidget({Key key}) : super(key: key);
+  const LoginWidget({Key? key}) : super(key: key);
 
   @override
   _LoginWidgetState createState() => _LoginWidgetState();
 }
 
 class _LoginWidgetState extends State<LoginWidget> {
-  TextEditingController emailAddressController;
-  TextEditingController passwordController;
-  bool passwordVisibility;
+  TextEditingController? emailAddressController;
+  TextEditingController? passwordController;
+
+  late bool passwordVisibility;
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -34,6 +35,13 @@ class _LoginWidgetState extends State<LoginWidget> {
     emailAddressController = TextEditingController();
     passwordController = TextEditingController();
     passwordVisibility = false;
+  }
+
+  @override
+  void dispose() {
+    emailAddressController?.dispose();
+    passwordController?.dispose();
+    super.dispose();
   }
 
   @override
@@ -220,6 +228,20 @@ class _LoginWidgetState extends State<LoginWidget> {
                                 ),
                                 borderRadius: BorderRadius.circular(8),
                               ),
+                              errorBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Color(0x00000000),
+                                  width: 2,
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              focusedErrorBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Color(0x00000000),
+                                  width: 2,
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
                               filled: true,
                               fillColor: Colors.white,
                               contentPadding:
@@ -280,6 +302,20 @@ class _LoginWidgetState extends State<LoginWidget> {
                                 ),
                                 borderRadius: BorderRadius.circular(8),
                               ),
+                              errorBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Color(0x00000000),
+                                  width: 2,
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              focusedErrorBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Color(0x00000000),
+                                  width: 2,
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
                               filled: true,
                               fillColor: Colors.white,
                               contentPadding: EdgeInsetsDirectional.fromSTEB(
@@ -289,6 +325,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                                   () =>
                                       passwordVisibility = !passwordVisibility,
                                 ),
+                                focusNode: FocusNode(skipTraversal: true),
                                 child: Icon(
                                   passwordVisibility
                                       ? Icons.visibility_outlined
@@ -362,7 +399,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                                   color: Colors.transparent,
                                   width: 1,
                                 ),
-                                borderRadius: 0,
+                                borderRadius: BorderRadius.circular(0),
                               ),
                             ),
                           ],
@@ -393,7 +430,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                               color: Colors.transparent,
                               width: 1,
                             ),
-                            borderRadius: 50,
+                            borderRadius: BorderRadius.circular(50),
                           ),
                         ),
                       ],
@@ -444,7 +481,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                                         color: Colors.transparent,
                                         width: 1,
                                       ),
-                                      borderRadius: 0,
+                                      borderRadius: BorderRadius.circular(0),
                                     ),
                                   ),
                                 ),
@@ -572,7 +609,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                                         color: Colors.transparent,
                                         width: 1,
                                       ),
-                                      borderRadius: 50,
+                                      borderRadius: BorderRadius.circular(50),
                                     ),
                                   ),
                                 ),

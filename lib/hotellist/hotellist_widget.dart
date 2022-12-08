@@ -9,7 +9,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class HotellistWidget extends StatefulWidget {
-  const HotellistWidget({Key key}) : super(key: key);
+  const HotellistWidget({Key? key}) : super(key: key);
 
   @override
   _HotellistWidgetState createState() => _HotellistWidgetState();
@@ -345,7 +345,7 @@ class _HotellistWidgetState extends State<HotellistWidget> {
                           color: Colors.transparent,
                           width: 1,
                         ),
-                        borderRadius: 30,
+                        borderRadius: BorderRadius.circular(30),
                       ),
                     ),
                   ],

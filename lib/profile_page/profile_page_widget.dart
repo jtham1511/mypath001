@@ -14,7 +14,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ProfilePageWidget extends StatefulWidget {
-  const ProfilePageWidget({Key key}) : super(key: key);
+  const ProfilePageWidget({Key? key}) : super(key: key);
 
   @override
   _ProfilePageWidgetState createState() => _ProfilePageWidgetState();
@@ -26,7 +26,7 @@ class _ProfilePageWidgetState extends State<ProfilePageWidget> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<UsersRecord>(
-      stream: UsersRecord.getDocument(currentUserReference),
+      stream: UsersRecord.getDocument(currentUserReference!),
       builder: (context, snapshot) {
         // Customize what your widget looks like when it's loading.
         if (!snapshot.hasData) {
@@ -41,7 +41,7 @@ class _ProfilePageWidgetState extends State<ProfilePageWidget> {
             ),
           );
         }
-        final profilePageUsersRecord = snapshot.data;
+        final profilePageUsersRecord = snapshot.data!;
         return Scaffold(
           key: scaffoldKey,
           backgroundColor: FlutterFlowTheme.of(context).background,
@@ -154,9 +154,9 @@ class _ProfilePageWidgetState extends State<ProfilePageWidget> {
                           );
                         }
                         List<ProductNameRecord> containerProductNameRecordList =
-                            snapshot.data;
+                            snapshot.data!;
                         // Return an empty Container when the document does not exist.
-                        if (snapshot.data.isEmpty) {
+                        if (snapshot.data!.isEmpty) {
                           return Container();
                         }
                         final containerProductNameRecord =
@@ -170,7 +170,7 @@ class _ProfilePageWidgetState extends State<ProfilePageWidget> {
                               MaterialPageRoute(
                                 builder: (context) => EditCarWidget(
                                   carDetails:
-                                      containerProductNameRecord.reference,
+                                      containerProductNameRecord!.reference,
                                 ),
                               ),
                             );
@@ -388,7 +388,7 @@ class _ProfilePageWidgetState extends State<ProfilePageWidget> {
                       color: FlutterFlowTheme.of(context).grayLighter,
                       width: 1,
                     ),
-                    borderRadius: 30,
+                    borderRadius: BorderRadius.circular(30),
                   ),
                 ),
               ),

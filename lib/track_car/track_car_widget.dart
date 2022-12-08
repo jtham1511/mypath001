@@ -8,17 +8,17 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class TrackCarWidget extends StatefulWidget {
-  const TrackCarWidget({Key key}) : super(key: key);
+  const TrackCarWidget({Key? key}) : super(key: key);
 
   @override
   _TrackCarWidgetState createState() => _TrackCarWidgetState();
 }
 
 class _TrackCarWidgetState extends State<TrackCarWidget> {
-  LatLng currentUserLocationValue;
+  LatLng? currentUserLocationValue;
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  LatLng googleMapsCenter;
-  Completer<GoogleMapController> googleMapsController;
+  LatLng? googleMapsCenter;
+  final googleMapsController = Completer<GoogleMapController>();
 
   @override
   void initState() {
@@ -59,9 +59,9 @@ class _TrackCarWidgetState extends State<TrackCarWidget> {
             ),
           );
         }
-        List<ProductNameRecord> trackCarProductNameRecordList = snapshot.data;
+        List<ProductNameRecord> trackCarProductNameRecordList = snapshot.data!;
         // Return an empty Container when the document does not exist.
-        if (snapshot.data.isEmpty) {
+        if (snapshot.data!.isEmpty) {
           return Container();
         }
         final trackCarProductNameRecord =
@@ -82,7 +82,7 @@ class _TrackCarWidgetState extends State<TrackCarWidget> {
                       onCameraIdle: (latLng) =>
                           setState(() => googleMapsCenter = latLng),
                       initialLocation: googleMapsCenter ??=
-                          currentUserLocationValue,
+                          currentUserLocationValue!,
                       markerColor: GoogleMarkerColor.violet,
                       mapType: MapType.normal,
                       style: GoogleMapStyle.standard,

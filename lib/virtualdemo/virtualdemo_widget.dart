@@ -2,20 +2,21 @@ import '../flutter_flow/flutter_flow_icon_button.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
 import '../flutter_flow/flutter_flow_util.dart';
 import '../flutter_flow/flutter_flow_widgets.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart'
+    as smooth_page_indicator;
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class VirtualdemoWidget extends StatefulWidget {
-  const VirtualdemoWidget({Key key}) : super(key: key);
+  const VirtualdemoWidget({Key? key}) : super(key: key);
 
   @override
   _VirtualdemoWidgetState createState() => _VirtualdemoWidgetState();
 }
 
 class _VirtualdemoWidgetState extends State<VirtualdemoWidget> {
-  PageController pageViewController;
+  PageController? pageViewController;
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -265,13 +266,19 @@ class _VirtualdemoWidgetState extends State<VirtualdemoWidget> {
                               PageController(initialPage: 0),
                           scrollDirection: Axis.horizontal,
                           children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(18),
-                              child: Image.asset(
-                                'assets/images/3D-Video-Indonesia-360.jpg',
-                                width: 100,
-                                height: 100,
-                                fit: BoxFit.cover,
+                            InkWell(
+                              onTap: () async {
+                                await launchURL(
+                                    'https://aframe.io/aframe/examples/boilerplate/360-video/');
+                              },
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(18),
+                                child: Image.asset(
+                                  'assets/images/3D-Video-Indonesia-360.jpg',
+                                  width: 100,
+                                  height: 100,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
                             Image.asset(
@@ -287,19 +294,19 @@ class _VirtualdemoWidgetState extends State<VirtualdemoWidget> {
                           child: Padding(
                             padding:
                                 EdgeInsetsDirectional.fromSTEB(0, 0, 0, 10),
-                            child: SmoothPageIndicator(
+                            child: smooth_page_indicator.SmoothPageIndicator(
                               controller: pageViewController ??=
                                   PageController(initialPage: 0),
                               count: 2,
                               axisDirection: Axis.horizontal,
                               onDotClicked: (i) {
-                                pageViewController.animateToPage(
+                                pageViewController!.animateToPage(
                                   i,
                                   duration: Duration(milliseconds: 500),
                                   curve: Curves.ease,
                                 );
                               },
-                              effect: ExpandingDotsEffect(
+                              effect: smooth_page_indicator.ExpandingDotsEffect(
                                 expansionFactor: 1.5,
                                 spacing: 8,
                                 radius: 30,
@@ -394,7 +401,7 @@ class _VirtualdemoWidgetState extends State<VirtualdemoWidget> {
                         FFButtonWidget(
                           onPressed: () async {
                             await launchURL(
-                                'http://dev01.mypath.com.sg/VRdemo');
+                                'https://aframe.io/aframe/examples/boilerplate/360-video/');
                           },
                           text: 'Try Now',
                           options: FFButtonOptions(
@@ -413,7 +420,7 @@ class _VirtualdemoWidgetState extends State<VirtualdemoWidget> {
                               color: Colors.transparent,
                               width: 1,
                             ),
-                            borderRadius: 30,
+                            borderRadius: BorderRadius.circular(30),
                           ),
                         ),
                       ],

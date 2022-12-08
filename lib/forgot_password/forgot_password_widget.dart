@@ -7,14 +7,14 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ForgotPasswordWidget extends StatefulWidget {
-  const ForgotPasswordWidget({Key key}) : super(key: key);
+  const ForgotPasswordWidget({Key? key}) : super(key: key);
 
   @override
   _ForgotPasswordWidgetState createState() => _ForgotPasswordWidgetState();
 }
 
 class _ForgotPasswordWidgetState extends State<ForgotPasswordWidget> {
-  TextEditingController emailFieldController;
+  TextEditingController? emailFieldController;
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -24,9 +24,16 @@ class _ForgotPasswordWidgetState extends State<ForgotPasswordWidget> {
   }
 
   @override
+  void dispose() {
+    emailFieldController?.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
+      backgroundColor: FlutterFlowTheme.of(context).customColor1,
       appBar: AppBar(
         backgroundColor: Colors.white,
         automaticallyImplyLeading: false,
@@ -53,7 +60,6 @@ class _ForgotPasswordWidgetState extends State<ForgotPasswordWidget> {
         centerTitle: true,
         elevation: 0,
       ),
-      backgroundColor: FlutterFlowTheme.of(context).customColor1,
       body: Column(
         mainAxisSize: MainAxisSize.max,
         children: [
@@ -91,6 +97,20 @@ class _ForgotPasswordWidgetState extends State<ForgotPasswordWidget> {
                   ),
                   borderRadius: BorderRadius.circular(8),
                 ),
+                errorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Color(0x00000000),
+                    width: 2,
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Color(0x00000000),
+                    width: 2,
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                ),
                 filled: true,
                 fillColor: Colors.white,
                 contentPadding: EdgeInsetsDirectional.fromSTEB(16, 24, 24, 24),
@@ -122,7 +142,7 @@ class _ForgotPasswordWidgetState extends State<ForgotPasswordWidget> {
             padding: EdgeInsetsDirectional.fromSTEB(0, 24, 0, 0),
             child: FFButtonWidget(
               onPressed: () async {
-                if (emailFieldController.text.isEmpty) {
+                if (emailFieldController!.text.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
@@ -133,7 +153,7 @@ class _ForgotPasswordWidgetState extends State<ForgotPasswordWidget> {
                   return;
                 }
                 await resetPassword(
-                  email: emailFieldController.text,
+                  email: emailFieldController!.text,
                   context: context,
                 );
               },
@@ -153,7 +173,7 @@ class _ForgotPasswordWidgetState extends State<ForgotPasswordWidget> {
                   color: Colors.transparent,
                   width: 1,
                 ),
-                borderRadius: 30,
+                borderRadius: BorderRadius.circular(30),
               ),
             ),
           ),

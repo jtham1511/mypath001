@@ -11,24 +11,19 @@ abstract class PaymentsRecord
   static Serializer<PaymentsRecord> get serializer =>
       _$paymentsRecordSerializer;
 
-  @nullable
-  DocumentReference get paymentUser;
+  DocumentReference? get paymentUser;
 
-  @nullable
-  DocumentReference get paymentProduct;
+  DocumentReference? get paymentProduct;
 
-  @nullable
-  DateTime get paymentDate;
+  DateTime? get paymentDate;
 
-  @nullable
-  String get paymentAmount;
+  String? get paymentAmount;
 
-  @nullable
-  String get paymentStatus;
+  String? get paymentStatus;
 
-  @nullable
   @BuiltValueField(wireName: kDocumentReferenceField)
-  DocumentReference get reference;
+  DocumentReference? get ffRef;
+  DocumentReference get reference => ffRef!;
 
   static void _initializeBuilder(PaymentsRecordBuilder builder) => builder
     ..paymentAmount = ''
@@ -39,11 +34,11 @@ abstract class PaymentsRecord
 
   static Stream<PaymentsRecord> getDocument(DocumentReference ref) => ref
       .snapshots()
-      .map((s) => serializers.deserializeWith(serializer, serializedData(s)));
+      .map((s) => serializers.deserializeWith(serializer, serializedData(s))!);
 
   static Future<PaymentsRecord> getDocumentOnce(DocumentReference ref) => ref
       .get()
-      .then((s) => serializers.deserializeWith(serializer, serializedData(s)));
+      .then((s) => serializers.deserializeWith(serializer, serializedData(s))!);
 
   PaymentsRecord._();
   factory PaymentsRecord([void Function(PaymentsRecordBuilder) updates]) =
@@ -52,21 +47,27 @@ abstract class PaymentsRecord
   static PaymentsRecord getDocumentFromData(
           Map<String, dynamic> data, DocumentReference reference) =>
       serializers.deserializeWith(serializer,
-          {...mapFromFirestore(data), kDocumentReferenceField: reference});
+          {...mapFromFirestore(data), kDocumentReferenceField: reference})!;
 }
 
 Map<String, dynamic> createPaymentsRecordData({
-  DocumentReference paymentUser,
-  DocumentReference paymentProduct,
-  DateTime paymentDate,
-  String paymentAmount,
-  String paymentStatus,
-}) =>
-    serializers.toFirestore(
-        PaymentsRecord.serializer,
-        PaymentsRecord((p) => p
-          ..paymentUser = paymentUser
-          ..paymentProduct = paymentProduct
-          ..paymentDate = paymentDate
-          ..paymentAmount = paymentAmount
-          ..paymentStatus = paymentStatus));
+  DocumentReference? paymentUser,
+  DocumentReference? paymentProduct,
+  DateTime? paymentDate,
+  String? paymentAmount,
+  String? paymentStatus,
+}) {
+  final firestoreData = serializers.toFirestore(
+    PaymentsRecord.serializer,
+    PaymentsRecord(
+      (p) => p
+        ..paymentUser = paymentUser
+        ..paymentProduct = paymentProduct
+        ..paymentDate = paymentDate
+        ..paymentAmount = paymentAmount
+        ..paymentStatus = paymentStatus,
+    ),
+  );
+
+  return firestoreData;
+}
